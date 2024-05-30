@@ -1,12 +1,12 @@
-from src.user_user.data import Dataset
-from src.user_user.user_user import UserUserModel
+from item_item.item_item import ItemItemModel
+from src.data import Dataset
 
 if __name__ == '__main__':
-    movielens_subset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=100, m_most_items=1000)
+    movielens_subset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=1000, m_most_items=200)
     train_ds, test_ds = movielens_subset.split_dataset(test_ratio=0.2)
     print(f"Number of instances on train: {len(train_ds)}")
     print(f"Number of instances on test: {len(test_ds)}")
-    model = UserUserModel(min_common_movies=5)
+    model = ItemItemModel(min_common_users=5, max_common_weights=25)
     model.fit(train_ds)
     train_predictions = model.predict(train_ds)
     print(f"Number of valid predictions on train: {train_predictions.count()}")
