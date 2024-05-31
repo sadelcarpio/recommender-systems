@@ -12,6 +12,10 @@ class ItemItemModel:
         self.sparse_weights = None
 
     def fit(self, train_dataset):
+        """
+        Calculates the weights (correlation) between items that were rated by the same users
+        :param train_dataset: Dataframe with the columns movieId, userId, rating
+        """
         self.sparse_weights = {}
         self.users_per_item = train_dataset.groupby("movieId").apply(
             lambda x: pd.Series({'usersRated': dict(zip(x["userId"], x["rating"])),
@@ -32,9 +36,20 @@ class ItemItemModel:
                 self.sparse_weights[item_prime_id].append((item_id, corr_coeff))
 
     def predict(self, df):
+        """
+        Calculates prediction on a DataFrame
+        :param df: Dataframe with the columns movieId, userId
+        :return: pd.Series with a predicted score for each row of df
+        """
         return df.apply(self.predict_score, axis=1).apply(lambda x: min(5, max(0, x)))
 
     def predict_score(self, row):
+        """
+        Computes the predicted score for a given (userId, movieId) instance
+        s(i, j) = sum(w_jj' * (r_ij' - r_j'_mean)) / sum(abs(w_jj'))
+        :param row: row that contains the userId and movieId
+        :return: s(i, j)
+        """
         sum_weights = 0
         weighted_sum = 0
         user_id = row["userId"]
@@ -60,6 +75,13 @@ class ItemItemModel:
 
     @staticmethod
     def calculate_correlation(users_rated_i: dict, users_rated_prime: dict, min_common_items: int = 5):
+        """
+        Calculate correlation coefficient between users that rated the same two items
+        :param users_rated_i: users that rated item i: {"movie_i": [users]}
+        :param users_rated_prime: users that rated item i': {"movie_i'": [users]}
+        :param min_common_items: minimum of common items to consider correlation
+        :return: correlation coefficient between ratings made by same users
+        """
         intersection = set(users_rated_i).intersection(set(users_rated_prime))
         if len(intersection) > min_common_items:
             user_ratings = pd.Series(users_rated_i)

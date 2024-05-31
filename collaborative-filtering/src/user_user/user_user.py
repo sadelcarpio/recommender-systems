@@ -12,6 +12,10 @@ class UserUserModel:
         self.sparse_weights = None
 
     def fit(self, train_dataset):
+        """
+        Calculates the weights (correlation) between users that rated the same items
+        :param train_dataset: Dataframe with the columns movieId, userId, rating
+        """
         self.sparse_weights = {}
         self.items_per_user = train_dataset.groupby("userId").apply(
             lambda x: pd.Series({'ratedMovies': dict(zip(x["movieId"], x["rating"])),
@@ -32,9 +36,20 @@ class UserUserModel:
                 self.sparse_weights[user_prime_id].append((user_id, corr_coeff))
 
     def predict(self, df):
+        """
+        Calculates prediction on a DataFrame
+        :param df: Dataframe with the columns movieId, userId
+        :return: pd.Series with a predicted score for each row of df
+        """
         return df.apply(self.predict_score, axis=1).apply(lambda x: min(5, max(0, x)))
 
     def predict_score(self, row):
+        """
+        Computes the predicted score for a given (userId, movieId) instance
+        s(i, j) = sum(w_ii' * (r_i'j - r_i'_mean)) / sum(abs(w_ii'))
+        :param row: that contains the userId and movieId
+        :return: s(i, j)
+        """
         sum_weights = 0
         weighted_sum = 0
         user_id = row["userId"]
