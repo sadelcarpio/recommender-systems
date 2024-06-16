@@ -1,12 +1,12 @@
 import pandas as pd
 
-from algorithm import BiasStrategy
+from algorithm import ALSWithBias
 from algorithm.strategy.base import FitStrategy
 from loss import mse
 
 
 class MatrixFactorization:
-    def __init__(self, K: int, strategy: FitStrategy = BiasStrategy(), reg: float = 0):
+    def __init__(self, K: int, strategy: FitStrategy = ALSWithBias(), reg: float = 0):
         self.K = K
         self.strategy = strategy
         self.reg = reg

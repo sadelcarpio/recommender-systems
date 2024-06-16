@@ -3,7 +3,7 @@ import numpy as np
 from algorithm.strategy.base import FitStrategy
 
 
-class DefaultStrategy(FitStrategy):
+class ALSWithoutBias(FitStrategy):
 
     def init_params(self, M, N, K, mu=None, reg=0.0):
         self.K = K

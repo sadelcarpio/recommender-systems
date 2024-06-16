@@ -3,7 +3,7 @@ import numpy as np
 from algorithm.strategy.base import FitStrategy
 
 
-class BiasStrategy(FitStrategy):
+class ALSWithBias(FitStrategy):
     b = None
     c = None
     mu = None
