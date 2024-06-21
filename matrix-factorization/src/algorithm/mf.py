@@ -15,10 +15,11 @@ class MatrixFactorization:
         self.items_per_user = None
         self.users_per_item = None
 
-    def fit(self, train_dataset, delta: float = 0.001) -> list:
+    def fit(self, train_dataset, test_dataset, delta: float = 0.001) -> list:
         """
         Fits the model to the training dataset, learning the W (user features) and U (item features) matrices.
-        :param train_dataset:
+        :param train_dataset: Train Dataset to train the model on.
+        :param test_dataset: Test Dataset to compare test loss at each step
         :param delta: Minimum difference between subsequent losses to consider the algorithm converged
         :return: Loss function on each iteration
         """
@@ -37,7 +38,9 @@ class MatrixFactorization:
             print(f"Iteration {n_iter}")
             self.optimizer.step(self.items_per_user, self.users_per_item)
             loss = mse(train_dataset["rating"], self.predict(train_dataset))
+            test_loss = mse(test_dataset["rating"], self.predict(test_dataset))
             print(f"Loss for iteration {n_iter}: {loss}")
+            print(f"Test Loss: {test_loss}")
             losses.append(loss)
             if n_iter > 1:
                 error = abs(losses[-2] - losses[-1])
