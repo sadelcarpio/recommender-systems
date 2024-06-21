@@ -1,9 +1,9 @@
 import numpy as np
 
-from algorithm.strategy.base import FitStrategy
+from algorithm.optimizers.base import ALSOptimizer
 
 
-class ALSWithBias(FitStrategy):
+class ALSWithBias(ALSOptimizer):
     b = None
     c = None
     mu = None

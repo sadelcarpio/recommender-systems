@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class FitStrategy(ABC):
+class ALSOptimizer(ABC):
     W = None
     U = None
     K = None

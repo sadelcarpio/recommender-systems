@@ -1,14 +1,14 @@
 import pandas as pd
 
 from algorithm import ALSWithBias
-from algorithm.strategy.base import FitStrategy
+from algorithm.optimizers.base import ALSOptimizer
 from loss import mse
 
 
 class MatrixFactorization:
-    def __init__(self, K: int, strategy: FitStrategy = ALSWithBias(), reg: float = 0):
+    def __init__(self, K: int, optimizer: ALSOptimizer = ALSWithBias(), reg: float = 0):
         self.K = K
-        self.strategy = strategy
+        self.optimizer = optimizer
         self.reg = reg
         self.M = None
         self.N = None
@@ -30,12 +30,12 @@ class MatrixFactorization:
         self.users_per_item = train_dataset.groupby("movieIdOrdered").apply(
             lambda x: pd.Series({'usersRated': dict(zip(x["userIdOrdered"], x["rating"])),
                                  'meanRating': x["rating"].mean()}), include_groups=False)
-        self.strategy.init_params(self.M, self.N, self.K, mu=train_dataset.rating.mean(), reg=self.reg)
+        self.optimizer.init_params(self.M, self.N, self.K, mu=train_dataset.rating.mean(), reg=self.reg)
         losses = []
         n_iter = 1
         while True:
             print(f"Iteration {n_iter}")
-            self.strategy.step(self.items_per_user, self.users_per_item)
+            self.optimizer.step(self.items_per_user, self.users_per_item)
             loss = mse(train_dataset["rating"], self.predict(train_dataset))
             print(f"Loss for iteration {n_iter}: {loss}")
             losses.append(loss)
@@ -52,4 +52,4 @@ class MatrixFactorization:
         :param df: DataFrame with rows: movieIdOrdered, userIdOrdered
         :return: pd.Series with the predicted score for each row of df
         """
-        return df.apply(self.strategy.predict, axis=1)
+        return df.apply(self.optimizer.predict, axis=1)
