@@ -14,6 +14,7 @@ class Dataset:
                                     (self.dataset.movieId.isin(most_common_movies.index))]
         self.dataset['userIdOrdered'] = self.dataset['userId'].astype('category').cat.codes
         self.dataset['movieIdOrdered'] = self.dataset['movieId'].astype('category').cat.codes
+        self.dataset = self.dataset[["userIdOrdered", "movieIdOrdered", "rating"]]
 
     def split_dataset(self, test_ratio: float) -> tuple:
         """
