@@ -6,14 +6,11 @@ from data import Dataset
 def create_model(k: int, m: int, n: int, reg: float = 0.0):
     """
     Create a MF model with bias and regularization
-    Args:
-        k: Dimension of embeddings a.k.a number of features per user / item
-        m: Number of unique items
-        n: Number of unique users
-        reg: regularization parameter
-
-    Returns:
-        Keras model.
+    :param k: Dimension of embeddings a.k.a number of features per user / item
+    :param m: Number of unique items
+    :param n: Number of unique users
+    :param reg: regularization parameter
+    :return: Keras model.
     """
     w = layers.Input(shape=(1,))
     u = layers.Input(shape=(1,))
