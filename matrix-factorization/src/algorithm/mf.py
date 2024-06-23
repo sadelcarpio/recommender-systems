@@ -53,7 +53,7 @@ class MatrixFactorization:
         """
         Calculates predicted score on a dataframe
         :param df: DataFrame with rows: movieIdOrdered, userIdOrdered
-        :param cap: Cap the values between 0 and 5 (range of ratings on the dataset)
+        :param clip: Cap the values between 0 and 5 (range of ratings on the dataset)
         :return: pd.Series with the predicted score for each row of df
         """
         predictions = df.apply(self.optimizer.predict, axis=1)
