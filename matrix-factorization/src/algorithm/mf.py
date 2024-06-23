@@ -49,10 +49,14 @@ class MatrixFactorization:
             n_iter += 1
         return losses
 
-    def predict(self, df):
+    def predict(self, df, clip=True):
         """
         Calculates predicted score on a dataframe
         :param df: DataFrame with rows: movieIdOrdered, userIdOrdered
+        :param cap: Cap the values between 0 and 5 (range of ratings on the dataset)
         :return: pd.Series with the predicted score for each row of df
         """
-        return df.apply(self.optimizer.predict, axis=1)
+        predictions = df.apply(self.optimizer.predict, axis=1)
+        if clip:
+            predictions = predictions.clip(lower=0, upper=5)
+        return predictions
