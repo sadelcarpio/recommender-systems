@@ -3,8 +3,12 @@ from keras import optimizers
 from src.data import Dataset
 from src.model.mf import MFModel
 
-dataset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=2000, m_most_items=200)
+dataset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=20000, m_most_items=2000)
 train, test = dataset.split_dataset(0.2)
+
+print(f"Train set size: {len(train)}")
+print(f"Test set size: {len(test)}")
+
 mu_train = train["rating"].mean()
 mu_test = test["rating"].mean()
 
@@ -18,5 +22,5 @@ model.compile(loss='mse', optimizer=optimizers.Adam(learning_rate=0.0001))
 print(model.summary())
 history = model.fit([train["userIdOrdered"], train["movieIdOrdered"]], train["rating"] - mu_train,
                     validation_data=([test["userIdOrdered"], test["movieIdOrdered"]], test["rating"] - mu_train),
-                    batch_size=256,
-                    epochs=50)
+                    batch_size=2048,
+                    epochs=10)
