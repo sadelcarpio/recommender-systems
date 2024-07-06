@@ -22,5 +22,5 @@ model.compile(loss='mse', optimizer=optimizers.Adam(learning_rate=0.0001))
 print(model.summary())
 history = model.fit([train["userIdOrdered"], train["movieIdOrdered"]], train["rating"] - mu_train,
                     validation_data=([test["userIdOrdered"], test["movieIdOrdered"]], test["rating"] - mu_train),
-                    batch_size=2048,
-                    epochs=10)
+                    batch_size=4096,
+                    epochs=20)

@@ -18,9 +18,9 @@ class MFModel(Model):
                 layers.Dense(units=k // 2, kernel_regularizer=regularizers.l2(reg), activation='relu'),
                 layers.BatchNormalization(),
                 layers.Dropout(rate=0.2),
-                layers.Dense(units=k // 4, kernel_regularizer=regularizers.l2(reg), activation='relu'),
+                layers.Dense(units=k // 2, kernel_regularizer=regularizers.l2(reg), activation='relu'),
                 layers.BatchNormalization(),
-                layers.Dropout(rate=0.1),
+                layers.Dropout(rate=0.2),
             ])
             self.deep_final_layer = layers.Dense(units=1, activation='linear')(self.deep_layer(self.concat_features))
         if not deep:
