@@ -1,20 +1,21 @@
-from keras import layers, Model
+from keras import layers, Model, regularizers
 import tensorflow as tf
 
 
 class AutoRecommender(Model):
-    def __init__(self, m: int, k: int):
+    def __init__(self, m: int, k: int, reg: float = 0.0):
         super().__init__()
-        self.user_movies = layers.Input(shape=(m,), sparse=True)
-        self.encoder_1 = layers.Dense(k, activation='relu')(self.user_movies)
-        self.encoder_2 = layers.Dense(k // 2, activation='relu')(self.encoder_1)
-        self.decoder_1 = layers.Dense(k // 2, activation='relu')(self.encoder_2)
-        self.decoder_2 = layers.Dense(k, activation='relu')(self.decoder_1)
+        self.user_movies = layers.Input(shape=(m,))
+        self.encoder_1 = layers.Dense(k, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.user_movies)
+        self.encoder_2 = layers.Dense(k // 2, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.encoder_1)
+        self.decoder_1 = layers.Dense(k // 2, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.encoder_2)
+        self.decoder_2 = layers.Dense(k, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.decoder_1)
         self.reconstructed = layers.Dense(m)(self.decoder_2)
         self.model = Model(inputs=self.user_movies, outputs=self.reconstructed)
 
     def call(self, inputs, training=False):
-        return self.model(inputs)
+        dense_inputs = tf.sparse.to_dense(inputs)
+        return self.model(dense_inputs)
 
     def summary(
             self,
