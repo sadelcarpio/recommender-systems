@@ -6,7 +6,8 @@ import tensorflow as tf
 
 def custom_sparse_mse(y_true, y_pred):
     dense_y_true = tf.sparse.to_dense(y_true)
-    return tf.reduce_mean(tf.square(dense_y_true - y_pred))
+    masked_y_pred = tf.where(dense_y_true != 0, y_pred, 0)
+    return tf.reduce_mean(tf.square(dense_y_true - masked_y_pred))
 
 
 dataset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=10000, m_most_items=1000)

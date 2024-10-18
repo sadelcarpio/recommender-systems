@@ -5,7 +5,7 @@ import tensorflow as tf
 class AutoRecommender(Model):
     def __init__(self, m: int, k: int):
         super().__init__()
-        self.user_movies = layers.Input(shape=(m,))
+        self.user_movies = layers.Input(shape=(m,), sparse=True)
         self.encoder_1 = layers.Dense(k, activation='relu')(self.user_movies)
         self.encoder_2 = layers.Dense(k // 2, activation='relu')(self.encoder_1)
         self.decoder_1 = layers.Dense(k // 2, activation='relu')(self.encoder_2)
@@ -14,7 +14,6 @@ class AutoRecommender(Model):
         self.model = Model(inputs=self.user_movies, outputs=self.reconstructed)
 
     def call(self, inputs, training=False):
-        dense_inputs = tf.sparse.to_dense(inputs)
         return self.model(inputs)
 
     def summary(
