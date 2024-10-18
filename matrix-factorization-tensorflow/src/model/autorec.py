@@ -3,14 +3,12 @@ import tensorflow as tf
 
 
 class AutoRecommender(Model):
-    def __init__(self, m: int, k: int, reg: float = 0.0):
+    def __init__(self, m: int, k: int):
         super().__init__()
         self.user_movies = layers.Input(shape=(m,))
-        self.encoder_1 = layers.Dense(k, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.user_movies)
-        self.encoder_2 = layers.Dense(k // 2, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.encoder_1)
-        self.decoder_1 = layers.Dense(k // 2, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.encoder_2)
-        self.decoder_2 = layers.Dense(k, activation='relu', kernel_regularizer=regularizers.l2(reg))(self.decoder_1)
-        self.reconstructed = layers.Dense(m)(self.decoder_2)
+        self.dropout_1 = layers.Dropout(rate=0.3)(self.user_movies)
+        self.hidden = layers.Dense(units=k)(self.dropout_1)
+        self.reconstructed = layers.Dense(m)(self.hidden)
         self.model = Model(inputs=self.user_movies, outputs=self.reconstructed)
 
     def call(self, inputs, training=False):
