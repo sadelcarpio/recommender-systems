@@ -1,4 +1,4 @@
-from keras import layers, Model, regularizers
+from keras import layers, Model
 import tensorflow as tf
 
 
@@ -8,7 +8,7 @@ class AutoRecommender(Model):
         self.user_movies = layers.Input(shape=(m,))
         self.dropout_1 = layers.Dropout(rate=0.3)(self.user_movies)
         self.hidden = layers.Dense(units=k)(self.dropout_1)
-        self.reconstructed = layers.Dense(m)(self.hidden)
+        self.reconstructed = layers.Dense(m, activation='relu')(self.hidden)
         self.model = Model(inputs=self.user_movies, outputs=self.reconstructed)
 
     def call(self, inputs, training=False):
