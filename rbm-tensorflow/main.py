@@ -1,5 +1,6 @@
 import tensorflow as tf
-from keras import Model
+from keras import Model, datasets, optimizers
+import matplotlib.pyplot as plt
 
 
 class BernoulliRBM(Model):
@@ -14,9 +15,9 @@ class BernoulliRBM(Model):
 
     def build(self, input_shape):
         self.visible_units = input_shape[-1]
-        self.w = tf.Variable(tf.random.normal((self.visible_units, self.hidden_units)))
-        self.b = tf.Variable(tf.random.normal((1, self.visible_units)))
-        self.c = tf.Variable(tf.random.normal((1, self.hidden_units)))
+        self.w = tf.Variable(0.1 * tf.random.uniform((self.visible_units, self.hidden_units), minval=-1, maxval=1))
+        self.b = tf.Variable(0.1 * tf.random.uniform((1, self.visible_units), minval=-1, maxval=1))
+        self.c = tf.Variable(0.1 * tf.random.uniform((1, self.hidden_units), minval=-1, maxval=1))
 
     def call(self, inputs, training=False, mask=None):
         p_h = tf.sigmoid(inputs @ self.w + self.c)
@@ -40,10 +41,24 @@ class BernoulliRBM(Model):
         return {'loss': loss}
 
 
-X = tf.cast(tf.random.uniform((64, 10)), tf.float32)
-dataset = tf.data.Dataset.from_tensor_slices((X, X)).batch(32)
-model = BernoulliRBM(hidden_units=5)
-model.build(X.shape)
-model.free_energy(X)
-model.compile(optimizer='SGD')
-model.fit(dataset, epochs=1000)
+def preprocess_mnist(x, y):
+    x, y = x / 255, y / 255
+    x, y = tf.reshape(x, (28 * 28,)), tf.reshape(y, (28 * 28,))
+    return x, y
+
+
+(x_train, _), (x_test, _) = datasets.mnist.load_data()
+dataset = tf.data.Dataset.from_tensor_slices((x_train, x_train)).map(preprocess_mnist).batch(32)
+val_dataset = tf.data.Dataset.from_tensor_slices((x_test, x_test)).map(preprocess_mnist).batch(32)
+model = BernoulliRBM(hidden_units=100)
+model.compile(optimizer=optimizers.SGD(learning_rate=0.1))
+model.fit(dataset, epochs=10)
+reconstructed = model.predict(val_dataset)
+
+plt.figure(figsize=(10, 10))
+for i, comp in enumerate(tf.transpose(model.w)):
+    plt.subplot(10, 10, i + 1)
+    plt.imshow(tf.reshape(comp, (28, 28)), cmap='gray')
+    plt.xticks([]), plt.yticks([])
+
+plt.show()

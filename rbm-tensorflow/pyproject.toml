@@ -5,6 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "keras<3.0",
-    "tensorflow<2.16",
+    "matplotlib>=3.9.2",
+    "tensorflow[and-cuda]>=2.18.0",
 ]
