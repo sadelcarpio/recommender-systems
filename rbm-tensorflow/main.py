@@ -1,6 +1,5 @@
 import tensorflow as tf
 from keras import Model
-from keras import backend as K
 
 
 class BernoulliRBM(Model):
@@ -27,18 +26,24 @@ class BernoulliRBM(Model):
         return v_prime
 
     def free_energy(self, v):
-        return - v @ tf.transpose(self.b)
+        return - v @ tf.transpose(self.b) - tf.reduce_sum(tf.math.log(1 + tf.math.exp(v @ self.w + self.c)), axis=1,
+                                                          keepdims=True)
 
     def train_step(self, data):
         v, v = data
         with tf.GradientTape() as tape:
             v_prime = self(v)
-            loss = tf.math.reduce_sum(self.free_energy(v) - self.free_energy(v_prime))
+            loss = tf.math.reduce_mean(self.free_energy(v) - self.free_energy(v_prime))
+        trainable_vars = self.trainable_variables
+        gradients = tape.gradient(loss, trainable_vars)
+        self.optimizer.apply_gradients(zip(gradients, trainable_vars))
         return {'loss': loss}
 
 
-X = tf.random.normal((64, 10))
+X = tf.cast(tf.random.uniform((64, 10)), tf.float32)
 dataset = tf.data.Dataset.from_tensor_slices((X, X)).batch(32)
 model = BernoulliRBM(hidden_units=5)
-model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(), optimizer='SGD')
-model.fit(dataset, epochs=1)
+model.build(X.shape)
+model.free_energy(X)
+model.compile(optimizer='SGD')
+model.fit(dataset, epochs=1000)
