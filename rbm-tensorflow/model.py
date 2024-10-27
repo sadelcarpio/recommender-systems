@@ -28,12 +28,12 @@ class BernoulliRBM(Model):
 
     def sample_h(self, v):
         p_h = tf.sigmoid(v @ self.w + self.c)
-        h = tf.cast(tf.random.uniform(tf.shape(p_h)) < p_h, tf.float32)
+        h = tf.stop_gradient(tf.cast(tf.random.uniform(tf.shape(p_h)) < p_h, tf.float32))
         return h
 
     def sample_v(self, h):
         p_v = tf.sigmoid(h @ tf.transpose(self.w) + self.b)
-        v = tf.cast(tf.random.uniform(tf.shape(p_v)) < p_v, tf.float32)
+        v = tf.stop_gradient(tf.cast(tf.random.uniform(tf.shape(p_v)) < p_v, tf.float32))
         return v
 
     def call(self, inputs, training=False, mask=None):

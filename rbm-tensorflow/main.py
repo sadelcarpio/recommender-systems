@@ -9,7 +9,7 @@ from preprocess import preprocess_mnist
 dataset = tf.data.Dataset.from_tensor_slices((x_train, x_train)).map(preprocess_mnist).batch(1)
 val_dataset = tf.data.Dataset.from_tensor_slices((x_test, x_test)).map(preprocess_mnist).batch(1)
 model = BernoulliRBM(hidden_units=100, k=1)
-model.compile(optimizer=optimizers.SGD(learning_rate=0.001))
+model.compile(optimizer=optimizers.SGD(learning_rate=0.01))
 model.fit(dataset, validation_data=val_dataset, epochs=1)
 reconstructed = model.predict(val_dataset)
 
