@@ -1,10 +1,10 @@
 [project]
 name = "rbm-tensorflow"
 version = "0.1.0"
-description = "Add your description here"
+description = "Restricted Boltzmann Machine (RBM)"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "matplotlib>=3.9.2",
-    "tensorflow[and-cuda]>=2.18.0",
+    "tensorflow<2.16",
 ]
