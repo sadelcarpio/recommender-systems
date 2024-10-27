@@ -8,8 +8,8 @@ class BernoulliRBM(Model):
         self.w = None
         self.b = None
         self.c = None
-        if k <= 1:
-            raise ValueError('k must be greater than one')
+        if k < 1:
+            raise ValueError('k must be greater than zero')
         self.k = k
         self.visible_units = None
         self.hidden_units = hidden_units
