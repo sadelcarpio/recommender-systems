@@ -111,7 +111,8 @@ class CategoricalRBM(Model):
         return v_prime
 
     def free_energy(self, v):
-        return - v @ tf.transpose(self.b) - tf.reduce_sum(tf.math.log(1 + tf.math.exp(v @ self.w + self.c)), axis=1,
+        linear = tf.tensordot(v, self.w, axes=[[1, 2], [0, 1]]) + self.c
+        return - v @ tf.transpose(self.b) - tf.reduce_sum(tf.math.log(1 + tf.math.exp(linear)), axis=1,
                                                           keepdims=True)
 
     def train_step(self, data):
