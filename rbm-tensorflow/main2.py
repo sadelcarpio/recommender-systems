@@ -18,4 +18,6 @@ generated = model.predict(val_dataset)
 for i, (x, y) in enumerate(val_dataset.take(1)):
     x_dense = tf.squeeze(tf.sparse.to_dense(x))
     prediction = generated[0]
-    print(prediction.shape, x_dense.shape)
+    indices = tf.where(tf.reduce_sum(x_dense, axis=1) != 0)
+    nonzero_preds = prediction[indices]
+    nonzero_orig = x_dense.numpy()[indices]
