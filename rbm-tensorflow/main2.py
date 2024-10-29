@@ -1,18 +1,11 @@
-import tensorflow as tf
 from keras import optimizers
 
+import data
 from model import CategoricalRBM
 
-num_classes = 4
-visible_units = 10
-num_samples = 100
-X = []
-for i in range(num_samples):
-    cat = tf.random.categorical(tf.math.log([[1 / num_classes] * num_classes]), visible_units)
-    X.append(tf.squeeze(tf.one_hot(cat, num_classes)))
-X = tf.stack(X)
-print(X.shape)
-dataset = tf.data.Dataset.from_tensor_slices((X, X)).batch(1)
-model = CategoricalRBM(hidden_units=5, num_classes=num_classes)
+df = data.Dataset('movielens-20m-dataset/rating.csv', n_most_users=2000, m_most_items=200)
+train_dataset, val_dataset = df.sparse_dataset(test_ratio=0.1, batch_size=1)
+
+model = CategoricalRBM(hidden_units=250, num_classes=10)
 model.compile(optimizer=optimizers.SGD(learning_rate=0.01))
-model.fit(dataset, epochs=1)
+model.fit(train_dataset, validation_data=val_dataset, epochs=10)
