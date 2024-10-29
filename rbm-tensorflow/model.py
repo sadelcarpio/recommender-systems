@@ -110,6 +110,14 @@ class CategoricalRBM(Model):
             v_prime = self.sample_v(h)
         return v_prime
 
+    def predict_step(self, data):
+        x, _ = data
+        v_dense = tf.sparse.to_dense(x)
+        hidden = self.sample_h(v_dense)
+        linear = tf.tensordot(hidden, self.w, axes=[[1], [2]]) + self.b
+        p_v = tf.math.softmax(linear)
+        return p_v
+
     def free_energy(self, v):
         linear = tf.tensordot(v, self.w, axes=[[1, 2], [0, 1]]) + self.c
         return tf.tensordot(self.b, v, axes=[[0, 1], [1, 2]]) - tf.reduce_sum(tf.math.log(1 + tf.math.exp(linear)), axis=1)
