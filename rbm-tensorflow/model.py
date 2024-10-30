@@ -94,17 +94,17 @@ class CategoricalRBM(Model):
     def sample_h(self, v):
         linear = tf.tensordot(v, self.w, axes=[[1, 2], [0, 1]]) + self.c
         p_h = tf.sigmoid(linear)
-        h = tf.stop_gradient(tf.cast(tf.random.uniform(tf.shape(p_h)) < p_h, tf.float32))
-        return h
+        # h = tf.stop_gradient(tf.cast(tf.random.uniform(tf.shape(p_h)) < p_h, tf.float32))
+        return p_h
 
     def sample_v(self, h):
         linear = tf.tensordot(h, self.w, axes=[[1], [2]]) + self.b
         p_v = tf.math.softmax(linear)
-        p_v_reshaped = tf.stop_gradient(tf.reshape(p_v, [-1, self.num_classes]))
-        sample_indices = tf.stop_gradient(tf.random.categorical(tf.math.log(p_v_reshaped), num_samples=1))
-        sample_indices_reshaped = tf.stop_gradient(tf.reshape(sample_indices, [-1, self.visible_units]))
-        v = tf.stop_gradient(tf.one_hot(sample_indices_reshaped, depth=self.num_classes))
-        return v
+        # p_v_reshaped = tf.stop_gradient(tf.reshape(p_v, [-1, self.num_classes]))
+        # sample_indices = tf.stop_gradient(tf.random.categorical(tf.math.log(p_v_reshaped), num_samples=1))
+        # sample_indices_reshaped = tf.stop_gradient(tf.reshape(sample_indices, [-1, self.visible_units]))
+        # v = tf.stop_gradient(tf.one_hot(sample_indices_reshaped, depth=self.num_classes))
+        return p_v
 
     def call(self, inputs, training=False, mask=None):
         v_prime = inputs
