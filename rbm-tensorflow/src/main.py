@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras import datasets, optimizers
 
-from model import BernoulliRBM
-from preprocess import preprocess_mnist
+from src.models.bernoulli_rbm import BernoulliRBM
+from src.preprocess import preprocess_mnist
 
 (x_train, _), (x_test, _) = datasets.mnist.load_data()
 dataset = tf.data.Dataset.from_tensor_slices((x_train, x_train)).map(preprocess_mnist).batch(1)
