@@ -51,7 +51,7 @@ class BernoulliRBM(Model):
         v, v = data
         with tf.GradientTape() as tape:
             v_prime = self(v)
-            loss = tf.math.reduce_mean(self.free_energy(v) - self.free_energy(v_prime))
+            loss = tf.reduce_mean(self.free_energy(v) - self.free_energy(v_prime))
         diff = tf.reduce_mean(v - v_prime)
         trainable_vars = self.trainable_variables
         gradients = tape.gradient(loss, trainable_vars)
@@ -62,7 +62,7 @@ class BernoulliRBM(Model):
         v, v = data
         v_prime = self(v, training=False)
         diff = tf.reduce_mean(v - v_prime)
-        loss = tf.math.reduce_mean(self.free_energy(v) - self.free_energy(v_prime))
+        loss = tf.reduce_mean(self.free_energy(v) - self.free_energy(v_prime))
         return {'loss': loss, 'v-v_prime': diff}
 
 
@@ -100,7 +100,10 @@ class CategoricalRBM(Model):
     def sample_v(self, h):
         linear = tf.tensordot(h, self.w, axes=[[1], [2]]) + self.b
         p_v = tf.math.softmax(linear)
-        v = tf.stop_gradient(tf.cast(tf.random.uniform(tf.shape(p_v)) < p_v, tf.float32))
+        p_v_reshaped = tf.reshape(p_v, [-1, self.num_classes])
+        sample_indices = tf.stop_gradient(tf.random.categorical(tf.math.log(p_v_reshaped), num_samples=1))
+        sample_indices_reshaped = tf.reshape(sample_indices, [-1, self.visible_units])
+        v = tf.one_hot(sample_indices_reshaped, depth=self.num_classes)
         return v
 
     def call(self, inputs, training=False, mask=None):
@@ -127,8 +130,10 @@ class CategoricalRBM(Model):
         dense_v = tf.sparse.to_dense(v)
         with tf.GradientTape() as tape:
             v_prime = self(dense_v)
-            loss = tf.math.reduce_mean(self.free_energy(dense_v) - self.free_energy(v_prime))
-        diff = tf.reduce_mean(dense_v - v_prime)
+            mask = tf.reduce_sum(dense_v, axis=-1, keepdims=True) == 0
+            v_prime = tf.where(mask, tf.zeros_like(v_prime), v_prime)
+            loss = tf.reduce_mean(self.free_energy(dense_v) - self.free_energy(v_prime))
+        diff = tf.reduce_mean(tf.math.abs(dense_v - v_prime))
         trainable_vars = self.trainable_variables
         gradients = tape.gradient(loss, trainable_vars)
         self.optimizer.apply_gradients(zip(gradients, trainable_vars))
@@ -138,6 +143,8 @@ class CategoricalRBM(Model):
         v, v = data
         dense_v = tf.sparse.to_dense(v)
         v_prime = self(dense_v, training=False)
-        diff = tf.reduce_mean(dense_v - v_prime)
-        loss = tf.math.reduce_mean(self.free_energy(dense_v) - self.free_energy(v_prime))
+        mask = tf.reduce_sum(dense_v, axis=-1, keepdims=True) == 0
+        v_prime = tf.where(mask, tf.zeros_like(v_prime), v_prime)
+        diff = tf.reduce_mean(tf.math.abs(dense_v - v_prime))
+        loss = tf.reduce_mean(self.free_energy(dense_v) - self.free_energy(v_prime))
         return {'loss': loss, 'v-v_prime': diff}
