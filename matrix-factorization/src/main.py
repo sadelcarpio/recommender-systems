@@ -3,7 +3,7 @@ from src.algorithm import MatrixFactorization
 from src.data import Dataset
 
 if __name__ == '__main__':
-    movielens_subset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=2000, m_most_items=200)
+    movielens_subset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=20000, m_most_items=2000)
     train_ds, test_ds = movielens_subset.split_dataset(test_ratio=0.2)
     print(f"Number of train instances: {len(train_ds)}")
     print(f"Number of test instances: {len(test_ds)}")
