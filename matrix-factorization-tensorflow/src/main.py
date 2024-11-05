@@ -3,7 +3,7 @@ from keras import optimizers
 from src.data import Dataset
 from src.model.mf import MFModel
 
-dataset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=20000, m_most_items=20000)
+dataset = Dataset("movielens-20m-dataset/rating.csv", n_most_users=80000, m_most_items=30000)
 train, test = dataset.split_dataset(0.2)
 
 print(f"Train set size: {len(train)}")
