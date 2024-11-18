@@ -12,8 +12,8 @@ print(f"Test set size: {len(test)}")
 mu_train = train["rating"].mean()
 mu_test = test["rating"].mean()
 
-N = train.userIdOrdered.nunique()
-M = train.movieIdOrdered.nunique()
+N = dataset.n_users
+M = dataset.n_items
 
 model = MFModel(k=120, m=M, n=N, reg=3e-3, residual=True)
 
