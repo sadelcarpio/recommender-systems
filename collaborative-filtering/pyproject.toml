@@ -1,21 +1,20 @@
-[tool.poetry]
+[project]
 name = "collaborative-filtering"
 version = "0.1.0"
 description = ""
-authors = ["sadelcarpio <sadelcarpioa@gmail.com>"]
+authors = [
+    {name = "sadelcarpio", email = "sadelcarpioa@gmail.com"}
+]
 readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.2.2",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-pandas = "^2.2.2"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.2.0"
-matplotlib = "^3.9.0"
-kaggle = "^1.6.14"
-jupyter = "^1.0.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "matplotlib>=3.9.0",
+    "kaggle>=1.6.14",
+    "jupyter>=1.0.0",
+]

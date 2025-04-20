@@ -1,4 +1,4 @@
-from item_item.item_item import ItemItemModel
+from src.item_item.item_item import ItemItemModel
 from src.data import Dataset
 
 if __name__ == '__main__':
